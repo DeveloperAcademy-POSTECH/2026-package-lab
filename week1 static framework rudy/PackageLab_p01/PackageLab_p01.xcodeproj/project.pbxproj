@@ -29,11 +29,6 @@
 			path = PackageLab_p01;
 			sourceTree = "<group>";
 		};
-		C0DCA101300D5CEF008E0239 /* Common Swift FIles */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Common Swift FIles";
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,7 +45,6 @@
 		C0DCA0D7300D584D008E0239 = {
 			isa = PBXGroup;
 			children = (
-				C0DCA101300D5CEF008E0239 /* Common Swift FIles */,
 				C0DCA0E2300D584D008E0239 /* PackageLab_p01 */,
 				C0DCA0E1300D584D008E0239 /* Products */,
 			);
@@ -82,7 +76,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				C0DCA0E2300D584D008E0239 /* PackageLab_p01 */,
-				C0DCA101300D5CEF008E0239 /* Common Swift FIles */,
 			);
 			name = PackageLab_p01;
 			packageProductDependencies = (
