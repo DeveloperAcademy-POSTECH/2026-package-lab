@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:ObjectiveCSupportDemo}",
+            "name": "Debug Demo",
+            "target": "Demo",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug Demo"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:ObjectiveCSupportDemo}",
+            "name": "Release Demo",
+            "target": "Demo",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release Demo"
+        }
+    ]
+}
