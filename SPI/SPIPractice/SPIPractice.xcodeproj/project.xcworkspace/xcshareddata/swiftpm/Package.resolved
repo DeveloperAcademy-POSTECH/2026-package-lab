@@ -1,0 +1,15 @@
+{
+  "originHash" : "f614b2ed2157a00d2af89d66e7249381a92cb41353cea7900c08242bd0a40c6b",
+  "pins" : [
+    {
+      "identity" : "greetingkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dev-domo/GreetingKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "add9081d62ca3228c59921051f87628a87fac9e3"
+      }
+    }
+  ],
+  "version" : 3
+}
