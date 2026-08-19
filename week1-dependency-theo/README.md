@@ -328,9 +328,14 @@ Core Target
 
 #### 두 Dependency의 차이
 
+`Package.swift`를 살펴보면 dependencies라는 이름이 Package와 Target에서 각각 등장합니다.
+
+하지만 두 Dependency는 서로 다른 수준의 의존 관계를 표현합니다.
+
 | 구분 | 연결 관계 | 의미 |
 | --- | ------- | --- | 
 | `Package.Dependency` | Package → Package | 내 Package가 어떤 외부 Package에 의존하는지 정의 |
+| Xcode의 Package Dependency | App Project → Package | App Project에 외부 Swift Package를 추가하고 사용할 수 있도록 연결 |
 | `Target.Dependency` | Target → Target 또는 Product | 특정 Target이 실제로 어떤 Target/Product에 의존하는지 정의 |
 
 ### 이번 연구에서 얻은 결론
