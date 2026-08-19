@@ -126,7 +126,7 @@ Product는 하나 이상의 Target을 포함하도록 정의할 수 있습니다
 product: [
     .library(
         name: "MapSDK",
-        targets: ["MapCore, MapUI"]
+        targets: ["MapCore", "MapUI"]
     )
 ]
 ```
