@@ -107,7 +107,7 @@
 			mainGroup = 1D9E4CCD30306561003C14FA;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				1D9A1E4E3030838700080FBC /* XCLocalSwiftPackageReference "../TargetPractice" */,
+				1D9A1E4E3030838700080FBC /* XCLocalSwiftPackageReference "ShoppingExample" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1D9E4CD730306561003C14FA /* Products */;
@@ -349,9 +349,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		1D9A1E4E3030838700080FBC /* XCLocalSwiftPackageReference "../TargetPractice" */ = {
+		1D9A1E4E3030838700080FBC /* XCLocalSwiftPackageReference "ShoppingExample" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = ../TargetPractice;
+			relativePath = ShoppingExample;
 		};
 /* End XCLocalSwiftPackageReference section */
 

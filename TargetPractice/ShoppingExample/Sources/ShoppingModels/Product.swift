@@ -6,7 +6,7 @@ public struct Product: Identifiable, Equatable, Sendable {
     public let price: Int
     public let category: ProductCategory
 
-    public init(id: String, name: String, price: Int, category: ProductCategory) {
+    init(id: String, name: String, price: Int, category: ProductCategory) {
         self.id = id
         self.name = name
         self.price = price

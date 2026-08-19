@@ -5,7 +5,7 @@ public struct CheckoutSummary: Equatable, Sendable {
     public let discount: Int
     public let shippingFee: Int
 
-    public init(subtotal: Int, discount: Int, shippingFee: Int) {
+    init(subtotal: Int, discount: Int, shippingFee: Int) {
         self.subtotal = subtotal
         self.discount = discount
         self.shippingFee = shippingFee
@@ -21,7 +21,7 @@ public enum DiscountPolicy: Sendable {
     case fixed(Int)
     case percentage(Int)
 
-    public func discountAmount(for subtotal: Int) -> Int {
+    func discountAmount(for subtotal: Int) -> Int {
         switch self {
         case .none:
             return 0
@@ -38,7 +38,7 @@ public enum ShippingPolicy: Sendable {
     case freeOver(Int)
     case flatRate(Int)
 
-    public func shippingFee(for subtotal: Int) -> Int {
+    func shippingFee(for subtotal: Int) -> Int {
         switch self {
         case .freeOver(let minimum):
             return subtotal >= minimum ? 0 : 3_000
