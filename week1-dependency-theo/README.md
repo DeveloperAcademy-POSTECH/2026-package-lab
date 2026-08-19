@@ -98,7 +98,7 @@ Target.Dependency
 
 ### Module의 정의
 
-이번 연구에서 다루는 일반적인 Swift Source Target에서는 Target에 포함된 Source File이 Swift Pacakge Manager에 의해 Module로 컴파일됩니다.
+이번 연구에서 다루는 일반적인 Swift Source Target에서는 Target에 포함된 Source File이 Swift Package Manager에 의해 Module로 컴파일됩니다.
 
 ```
 MapUI Target
@@ -123,7 +123,7 @@ Apple의 `Product.library(name:type:targets:)` API는 Package에 Dependency를 �
 Product는 하나 이상의 Target을 포함하도록 정의할 수 있습니다.
 
 ```swift
-product: [
+products: [
     .library(
         name: "MapSDK",
         targets: ["MapCore", "MapUI"]
@@ -328,7 +328,7 @@ Core Target
 
 #### 두 Dependency의 차이
 
-| 구분 | 연결 관게 | 의미 |
+| 구분 | 연결 관계 | 의미 |
 | --- | ------- | --- | 
 | `Package.Dependency` | Package → Package | 내 Package가 어떤 외부 Package에 의존하는지 정의 |
 | `Target.Dependency` | Target → Target 또는 Product | 특정 Target이 실제로 어떤 Target/Product에 의존하는지 정의 |
@@ -372,7 +372,7 @@ MapPackage
 Package 제작자는 Product를 다음과 같이 정의할 수 있습니다.
 
 ```swift
-product: [
+products: [
     .library(
         name: "MapSDK",
         targets: ["MapCore", "MapUI"]
@@ -403,7 +403,7 @@ Apple의 `Product.library(name:type:targets:)` API는 Client가 Package에 Depen
 
 ### 사용하는 쪽에서는 필요한 Product를 선택합니다
 
-일반 앱에서 지도 기능만 필요하다면 다음 관게만 만들 수 있습니다.
+일반 앱에서 지도 기능만 필요하다면 다음 관계만 만들 수 있습니다.
 
 ```
 MyApp Target
@@ -452,9 +452,9 @@ MapPackage
 └── MapInternal Target
 ```
 
-`MapInternal`이 Package 안에 존재한다는 사실만으로 다른 Pacakge의 Client에게 Product를 통해 제공되는 것은 아닙니다.
+`MapInternal`이 Package 안에 존재한다는 사실만으로 다른 Package의 Client에게 Product를 통해 제공되는 것은 아닙니다.
 
-Apple 문서에서 직접 확인할 수 있는 범윈ㄴ 다음과 같습니다.
+Apple 문서에서 직접 확인할 수 있는 범위는 다음과 같습니다.
 
 > Target을 다른 Package에 제공하려면 해당 Target을 포함하는 Product를 정의할 수 있습니다.
 
@@ -685,7 +685,7 @@ PackageB → GeometryPackage: 1.5.0 ..< 2.0.0
 ```
 
 Apple의 `Package.Dependency`와 Version Requirement 관련 문서는 Swift Package Manager가 Dependency Resolution을 통해 사용할 정확한 Version을 결정한다고 설명합니다.
-또한 Exact Version Requirement 문서는 여러 Package가 같은 Package에 의존할 때 서로 다른 요구사항이 Dependency Graph의 출돌을 만들 수 있음을 설명합니다.
+또한 Exact Version Requirement 문서는 여러 Package가 같은 Package에 의존할 때 서로 다른 요구사항이 Dependency Graph의 충돌을 만들 수 있음을 설명합니다.
 
 반대로 다음처럼 공통 범위가 없다면 문제가 발생할 수 있습니다.
 
@@ -732,7 +732,7 @@ Package.resolved
 Package.swift = 어떤 버전을 허용하는가?  
 Package.resolved = 그 Requirement를 바탕으로 실제 어떤 버전을 사용하기로 결정했는가?
 
-Apple의 Xcode CI 관련 ㅁ누서에서도 Xcode가 각 Package Dependency의 정확한 버전을 `Package.resolved`에 저장하며, Package Requirement가 변경되면 이 파일이 갱신될 수 있다고 설명합니다.
+Apple의 Xcode CI 관련 문서에서도 Xcode가 각 Package Dependency의 정확한 버전을 `Package.resolved`에 저장하며, Package Requirement가 변경되면 이 파일이 갱신될 수 있다고 설명합니다.
 
 ### 이번 연구에서 얻은 결론
 
@@ -768,7 +768,7 @@ MapPackage
 GeometryPackage
 ```
 
-이 결우 `MyPackage`는 `MapPackage`만 직접 추가했는데도 `GeometryPackage`가 전체 Dependency 구조에 포함됩니다.
+이 경우 `MyPackage`는 `MapPackage`만 직접 추가했는데도 `GeometryPackage`가 전체 Dependency 구조에 포함됩니다.
 
 따라서 Package Dependency가 여러 단계로 연결될 때 Swift Package Manager가 이를 어떻게 다루는지 알아볼 필요가 있었습니다.
 
@@ -787,7 +787,7 @@ MyPackage
 
 이 구조에서 `MyPackage`가 직접 선언한 `MapPackage`는 Direct Dependency이고, `MapPackage`를 거쳐 연결되는 `GeometryPackage`는 `MyPackage` 관점에서 Transitive Dependency입니다.
 
-Apple의 WWDC18 Getting to Know Swift Package Manager에서도 SwiftPM이 먼저 Direct Dependency의 버전을 Resolve한 뒤, 그 Package들이 가지고 있는 Transitive Dependency를 재구적으로 확인한다고 설명합니다.
+Apple의 WWDC18 Getting to Know Swift Package Manager에서도 SwiftPM이 먼저 Direct Dependency의 버전을 Resolve한 뒤, 그 Package들이 가지고 있는 Transitive Dependency를 재귀적으로 확인한다고 설명합니다.
 
 따라서 Package Dependency는 내가 `Package.swift`에 직접 작성한 Package만으로 끝나는 것이 아니라, 각 Dependency Package가 다시 선언한 Dependency까지 이어지며 전체 Package Graph를 구성합니다.
 
@@ -819,10 +819,10 @@ MyPackage
 외부 Package 하나를 추가한다고 해서 그 Package 하나만 고려하면 되는 것은 아니었습니다.
 
 내 Package가 직접 선언한 Package Dependency + 의존하는 Package가 다시 선언한 Package Dependency + 각 Package의 Version Requirement  
-→ Pakcage Dependency Graph  
+→ Package Dependency Graph  
 → Dependency Resolution
 
-따라서 Package가 커지고 여러 외부 Dependency가 연결될수도록 전체 Dependency Graph를 함께 이해하는 것이 중요합니다.
+따라서 Package가 커지고 여러 외부 Dependency가 연결될수록 전체 Dependency Graph를 함께 이해하는 것이 중요합니다.
 
 ## 최종 결론
 
