@@ -177,6 +177,11 @@ Package
 | Target | Source File과 Dependency를 가지는 Package의 기본 구성 단위 |
 | Module | 일반적인 Swift Source Target의 Source가 컴파일되어 만들어지는 import 가능한 코드 단위 |
 
+여기서 Product가 Target을 포함한다고 표현할 수는 있지만, `Package.swift`에서는 Product와 Target이 각각 별도로 선언되며 Product가 자신을 구성할 Target을 참조합니다. 
+따라서 Target은 어떤 Product에도 포함되지 않은 채 Package 내부에 존재할 수 있고, 여러 Product가 동일한 Target을 참조하는 것도 가능합니다.
+
+즉, 이번 연구에서는 Product와 Target의 관계를 "Product가 Target을 소유한다"기보다 "Product가 자신을 구성할 Target을 참조한다"고 이해하는 것이 더 정확합니다.
+
 ### 이번 연구에서 얻은 결론
 
 처음에는 다음과 같이 생각했습니다.
