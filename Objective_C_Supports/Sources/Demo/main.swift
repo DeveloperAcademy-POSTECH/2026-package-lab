@@ -1,0 +1,3 @@
+import GreetingSwift
+
+runGreeting()
