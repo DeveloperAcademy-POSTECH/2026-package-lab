@@ -1,18 +1,18 @@
 # Asset Catalog Build & Runtime Resource Lookup
 
----
 
 ## 1. Why did I select this keyword?
 
-SwiftUI에서 이미지를 사용할 때 나는 평소 다음과 같이 작성했다.
+SwiftUI에서 이미지를 사용할 때 평소에는 다음과 같이 작성해왔다.
 
 ```swift
 Image("Fish")
 ```
 
-하지만 `"Fish"`라는 이름만으로 어떻게 이미지가 화면에 나타나는지, Xcode에 추가한 Asset이 Build 과정에서 어떻게 처리되는지는 정확히 설명하지 못했다.
+`"Fish"`만으로 어떻게 이미지가 화면에 나타나는지, Xcode에 추가한 Asset이 Build 과정에서 어떻게 처리되는지는 정확히 알지 못했었다.
 
 특히 `Assets.xcassets`를 하나의 특수한 파일처럼 생각하고 있었고, Asset Catalog 내부의 이미지와 metadata가 Build 이후에도 그대로 존재하는지 알지 못했다.
+추가로 Challenge6와 가장 연관있는 내용을 주제로 다루고 싶었고, 3D Assets을 가져오는 내용을 자세히 탐구해보는 시간을 갖고자 하였다.
 
 > **"Xcode에 추가한 Asset은 어떤 과정을 거쳐 `Image("Fish")`로 찾아지는가?"**
 
@@ -55,8 +55,6 @@ Assets.xcassets
 
 또한 하나의 Asset Set 안에서 해상도나 Appearance 등에 따른 여러 variation을 관리할 수 있다는 것을 알게 되었다.
 
-> **새로운 질문:** 그렇다면 이 구조는 앱을 Build한 이후에도 그대로 존재할까?
-
 ---
 
 ### Guiding Question 2
@@ -93,8 +91,6 @@ Assets.car
 
 즉 개발할 때 사용하는 Source 형태의 Asset Catalog가 그대로 Build Product에 복사되는 것이 아니라, Build 과정에서 처리된다는 것을 확인했다.
 
-> **새로운 질문:** Build된 `Assets.car`는 왜 `.app` 안에 존재하는 것일까?
-
 ---
 
 ### Guiding Question 3
@@ -126,7 +122,7 @@ AssetProject.app
 = executable + resources + metadata + ...
 ```
 
-라는 구조로 mental model을 수정했다.
+라는 구조로 이해를 하게 되었다.
 
 Foundation의 `Bundle`은 이러한 Bundle을 코드에서 나타내고 Resource 등에 접근할 수 있게 해주는 타입이고, `Bundle.main`은 현재 executable을 포함하는 main Bundle을 나타낸다는 것도 확인했다.
 
@@ -147,8 +143,6 @@ AssetProject.app
 Foundation Bundle
 → Bundle을 나타내고 접근하기 위한 타입
 ```
-
-> **새로운 질문:** 그렇다면 `Image("Fish")`는 이 Bundle에서 어떻게 Fish를 찾을까?
 
 ---
 
@@ -274,17 +268,13 @@ Source
 → Runtime Lookup
 ```
 
-특히 개발할 때 보는 `Fish.imageset`, `Contents.json` 등의 Source 구조가 Runtime까지 그대로 사용되는 것이 아니라, Build 과정에서 Asset Catalog가 처리되어 Build Product의 Resource로 포함된다는 점이 가장 크게 바뀐 mental model이다.
+특히 개발할 때 보는 `Fish.imageset`, `Contents.json` 등의 Source 구조가 Runtime까지 그대로 사용되는 것이 아니라, Build 과정에서 Asset Catalog가 처리되어 Build Product의 Resource로 포함된다는 점을 알게 되었다.
 
 또한 `Image("Fish")`도 단순히 파일 이름을 전달하는 코드라고 생각하기보다,
 
 > **어떤 이름의 image resource를 어느 Bundle에서 찾을 것인가**
 
 라는 관점으로 이해할 수 있게 되었다.
-
-여기까지의 탐구를 마치면서 새로운 질문이 생겼다.
-
-> **Asset이 App Target이 아니라 Swift Package Target에 속한다면 무엇이 달라질까?**
 
 ---
 
@@ -372,8 +362,6 @@ MyPackage
 
 라고 이해할 수 있었다.
 
-> **새로운 질문:** 그렇다면 Swift Package에서는 이 Resource를 어떻게 Build 대상으로 지정하고 처리할까?
-
 ---
 
 ### Guiding Question 6
@@ -435,8 +423,6 @@ Compiled Asset Catalog
 
 단, `.process()`라고 해서 모든 종류의 Resource가 동일한 방식으로 compile된다는 의미는 아니다. Resource 종류와 platform에 따라 적용되는 처리가 달라질 수 있다.
 
-> **새로운 질문:** 그렇다면 이렇게 처리된 Swift Package Target의 Resource는 Build 후 어디에 들어갈까?
-
 ---
 
 ### Guiding Question 7
@@ -446,11 +432,9 @@ Compiled Asset Catalog
 처음에는 두 가지 가능성을 생각했다.
 
 ```text
-1. App Resource처럼
-   Application Bundle에서 관리될까?
+1. App Resource처럼 Application Bundle에서 관리될까?
 
-2. Package에서 관리하는 Resource이므로
-   별도의 Resource Bundle이 만들어질까?
+2. Package에서 관리하는 Resource이므로 별도의 Resource Bundle이 만들어질까?
 ```
 
 처음에는 어느 쪽인지 판단하기 어려웠지만, Package로 Resource를 처리한다는 점에서 App Target의 Resource와 무언가 다르게 관리될 수도 있다고 예상했다.
@@ -495,8 +479,6 @@ Image("Fish")
 Fish가 속한 곳
 → FishFeature Target의 Resource Bundle
 ```
-
-> **새로운 질문:** 그렇다면 Package Target의 Resource Bundle을 코드에서는 어떻게 지정할까?
 
 ---
 
@@ -653,8 +635,7 @@ Image("Fish")
 ```
 
 ```text
-"Fish"라는 image resource를
-기본적으로 main Bundle에서 찾는다.
+"Fish"라는 image resource를 기본적으로 main Bundle에서 찾는다.
 ```
 
 반면:
@@ -664,9 +645,7 @@ Image("Fish", bundle: .module)
 ```
 
 ```text
-"Fish"라는 image resource를
-현재 Swift Package Target의
-Resource Bundle에서 찾는다.
+"Fish"라는 image resource를 현재 Swift Package Target의 Resource Bundle에서 찾는다.
 ```
 
 결국 이번 탐구를 통해 Asset을 단순히 Xcode에 넣어 사용하는 파일로 보는 것에서 벗어나 다음과 같은 흐름으로 바라볼 수 있게 되었다.
@@ -687,8 +666,6 @@ Runtime에서 어느 Bundle을 검색하는가
 
 ## 9. Discussions / Opening Questions
 
-이번 탐구를 통해 기존에 가지고 있던 일부 질문에는 답할 수 있었지만, 그 과정에서 새로운 질문들도 생겼다.
-
 - `Assets.car` 내부에는 Asset이 구체적으로 어떤 형태로 저장될까?
 - Dark Mode나 `@2x`, `@3x` 같은 variation은 Runtime에서 어떻게 선택될까?
 - 일반 파일 Resource와 Asset Catalog의 Build 과정은 어떻게 다를까?
@@ -696,13 +673,9 @@ Runtime에서 어느 Bundle을 검색하는가
 - Swift Package의 Asset Catalog Build 결과는 App Target의 Asset Catalog와 어떤 차이가 있을까?
 - Target, Module, Product는 서로 어떤 관계를 가지고 있을까?
 
-이 질문들은 이번 탐구의 범위를 넘어가기 때문에 바로 확장하지 않고 이후 Research Keyword의 후보로 남겨두었다.
-
 ---
 
 ## 10. Research Process
-
-이번 탐구는 처음부터 모든 개념을 알고 시작한 것이 아니라, 하나의 질문에 답하면서 다음 질문을 만들어가는 방식으로 진행했다.
 
 ```text
 Image("Fish")는 어떻게 동작하지?
@@ -768,11 +741,3 @@ Bundle.module
 - [Apple Developer Documentation — Bundling resources with a Swift package](https://developer.apple.com/documentation/xcode/bundling-resources-with-a-swift-package): Swift Package에서 Resource를 Target에 scope하고 Package의 Resource Bundle에 접근하는 방법을 설명합니다.
 - [Apple Developer Documentation — Resource.process(_:localization:)](https://developer.apple.com/documentation/packagedescription/resource/process(_:localization:)): Swift Package Resource에 Build 과정의 처리를 적용하도록 지정하는 `.process()` 규칙을 설명합니다.
 - [Apple Developer Documentation — Resource.copy(_:)](https://developer.apple.com/documentation/packagedescription/resource/copy(_:)): Swift Package Resource를 원본 형태로 복사하는 `.copy()` 규칙을 설명합니다.
-
----
-
-> **Note**
->
-> `Assets.car` 내부 lookup, decoding, caching 등 Apple이 공개 API 계약으로 설명하지 않는 내부 구현은 이번 탐구의 범위에서 제외했다.
->
-> **I cannot confirm this.**
