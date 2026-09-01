@@ -57,7 +57,7 @@ Assets.xcassets
 
 처음에는 원본 Asset Catalog가 그대로 `.app`에 들어가지는 않을 것이라고 예상했다. 직접 프로젝트를 Build한 뒤 `.app`의 Package Contents를 확인했다.
 
-Plaintext
+
 
 ```
 AssetProject.app
@@ -90,7 +90,7 @@ Assets.car
 
 Build Product를 관찰하면서 `.app` 안에는 실행 파일뿐만 아니라 `Assets.car`, `Info.plist` 등 여러 파일이 함께 존재한다는 것을 확인했다.
 
-Plaintext
+
 
 ```
 AssetProject.app
@@ -156,7 +156,7 @@ bundle = nil
 
 이번 탐구를 통해 내가 이해한 Asset의 전체 흐름은 다음과 같다.
 
-Plaintext
+
 
 ```
 [Source]
@@ -191,7 +191,7 @@ Image("Fish")
 
 탐구 전에는 Asset을 다음 정도로 이해하고 있었다.
 
-Plaintext
+
 
 ```
 Assets.xcassets
