@@ -220,11 +220,12 @@ Source → Build → Compiled Resource → Bundle → Runtime Lookup
 - Swift Package에서 `Bundle.module`은 왜 필요할까?
 ---
 ## 참고 자료
-Apple Developer Documentation — Asset management: Xcode에서 이미지, 색상, 아이콘 등의 Asset을 관리하고 Runtime에 로드하는 전반적인 개념과 Asset Catalog 관련 문서의 공식 목차를 제공합니다.
-Apple Developer Documentation — Managing assets with asset catalogs: Asset Catalog를 사용해 이미지 등의 Resource와 기기 특성에 따른 variation을 구성하고 관리하는 방법을 설명합니다.
-Apple Developer Documentation — Xcode command-line tool reference: Xcode가 제공하는 command-line build tool들을 설명하며, Asset Catalog를 compile·verify하는 actool을 확인하는 데 사용했습니다.
-Apple Developer Documentation — Bundle: 디스크의 Bundle directory에 저장된 code와 resource를 나타내는 Foundation의 Bundle 타입과 Bundle을 통한 Resource 접근 방식을 설명합니다.
-Apple Developer Documentation — Bundle.main: 현재 실행 중인 executable을 포함하는 Bundle을 반환하는 Bundle.main을 설명합니다.
-Apple Developer Documentation — Image.init(_:bundle:): SwiftUI에서 이름으로 image resource를 lookup할 때 검색할 Bundle을 지정하는 방법을 설명합니다. bundle이 nil이면 main Bundle을 사용한다는 것을 확인할 수 있습니다.
-Apple Developer Documentation — Image.init(systemName:): System Symbol과 Asset Catalog에 저장한 custom image resource의 차이를 확인하고, custom image에는 init(_:bundle:)을 사용한다는 점을 설명합니다.
+## 참고 자료
 
+- [Apple Developer Documentation — Asset management](https://developer.apple.com/documentation/xcode/asset-management): Xcode에서 이미지, 색상, 아이콘 등의 Asset을 관리하고 Runtime에 로드하는 전반적인 개념과 Asset Catalog 관련 문서의 공식 목차를 제공합니다.
+- [Apple Developer Documentation — Managing assets with asset catalogs](https://developer.apple.com/documentation/xcode/managing-assets-with-asset-catalogs): Asset Catalog를 사용해 이미지 등의 Resource와 기기 특성에 따른 variation을 구성하고 관리하는 방법을 설명합니다.
+- [Apple Developer Documentation — Xcode command-line tool reference](https://developer.apple.com/documentation/xcode/command-line-tools): Xcode가 제공하는 command-line build tool들을 설명하며, Asset Catalog를 compile·verify하는 actool을 확인하는 데 사용했습니다.
+- [Apple Developer Documentation — Bundle](https://developer.apple.com/documentation/foundation/bundle): 디스크의 Bundle directory에 저장된 code와 resource를 나타내는 Foundation의 Bundle 타입과 Bundle을 통한 Resource 접근 방식을 설명합니다.
+- [Apple Developer Documentation — Bundle.main](https://developer.apple.com/documentation/foundation/bundle/1410786-main): 현재 실행 중인 executable을 포함하는 Bundle을 반환하는 Bundle.main을 설명합니다.
+- [Apple Developer Documentation — Image.init(_:bundle:)](https://developer.apple.com/documentation/swiftui/image/init(_:bundle:)-85lcm): SwiftUI에서 이름으로 image resource를 lookup할 때 검색할 Bundle을 지정하는 방법을 설명합니다. bundle이 nil이면 main Bundle을 사용한다는 것을 확인할 수 있습니다.
+- [Apple Developer Documentation — Image.init(systemName:)](https://developer.apple.com/documentation/swiftui/image/init(systemname:)): System Symbol과 Asset Catalog에 저장한 custom image resource의 차이를 확인하고, custom image에는 init(_:bundle:)을 사용한다는 점을 설명합니다.
