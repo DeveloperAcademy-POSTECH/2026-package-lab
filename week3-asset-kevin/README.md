@@ -220,7 +220,6 @@ Source → Build → Compiled Resource → Bundle → Runtime Lookup
 - Swift Package에서 `Bundle.module`은 왜 필요할까?
 ---
 ## 참고 자료
-## 참고 자료
 
 - [Apple Developer Documentation — Asset management](https://developer.apple.com/documentation/xcode/asset-management): Xcode에서 이미지, 색상, 아이콘 등의 Asset을 관리하고 Runtime에 로드하는 전반적인 개념과 Asset Catalog 관련 문서의 공식 목차를 제공합니다.
 - [Apple Developer Documentation — Managing assets with asset catalogs](https://developer.apple.com/documentation/xcode/managing-assets-with-asset-catalogs): Asset Catalog를 사용해 이미지 등의 Resource와 기기 특성에 따른 variation을 구성하고 관리하는 방법을 설명합니다.
