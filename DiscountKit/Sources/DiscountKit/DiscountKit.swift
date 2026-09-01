@@ -17,7 +17,7 @@ public struct DiscountCalculator {
             throw DiscountError.invalidDiscountRate
         }
         
-        let additionalRate = 0.1
+        let additionalRate = membership == .vip ? 0.1 : 0
         let finalDiscountRate = discountRate + additionalRate
         
         return Int(Double(price) * (1 - finalDiscountRate))
