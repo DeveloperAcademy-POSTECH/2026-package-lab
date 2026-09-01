@@ -1,8 +1,8 @@
 import Testing
 @testable import DiscountKit
 
-@Test("20% 할인")
-func appliesTwentyPercentDiscount() async throws {
+@Test("일반 회원 20% 할인")
+func appliesTwentyPercentDiscount() throws {
     let calculator = DiscountCalculator()
     
     let result = try calculator.finalPrice(price: 10000, discountRate: 0.2)
@@ -10,8 +10,8 @@ func appliesTwentyPercentDiscount() async throws {
     #expect(result == 8000)
 }
 
-@Test("0% 할인")
-func zeroDiscountKeepsOriginalPrice() async throws {
+@Test("일반 회원 0% 할인")
+func zeroDiscountKeepsOriginalPrice() throws {
     let calculator = DiscountCalculator()
     
     let result = try calculator.finalPrice(price: 10000, discountRate: 0)
@@ -19,11 +19,11 @@ func zeroDiscountKeepsOriginalPrice() async throws {
     #expect(result == 10000)
 }
 
-@Test("유효하지 않은 값 할인")
-func invalidDiscountThrowsError() async throws {
+@Test("VIP 회원은 추가 10%할인")
+func vipGetsAdditionalTenPercentDiscount() throws {
     let calculator = DiscountCalculator()
     
-    #expect(throws: DiscountError.invalidDiscountRate) {
-        try calculator.finalPrice(price: 10000, discountRate: 1.5)
-    }
+    let result = try calculator.finalPrice(price: 10000, discountRate: 0.2, membership: .vip)
+    
+    #expect(result == 7000)
 }

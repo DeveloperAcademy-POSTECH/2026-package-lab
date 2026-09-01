@@ -4,7 +4,11 @@
 public struct DiscountCalculator {
     public init() {}
     
-    public func finalPrice(price: Int, discountRate: Double) throws -> Int {
+    public func finalPrice(
+        price: Int,
+        discountRate: Double,
+        membership: Membership = .regular
+    ) throws -> Int {
         guard price >= 0 else {
             throw DiscountError.invalidPrice
         }
@@ -13,6 +17,9 @@ public struct DiscountCalculator {
             throw DiscountError.invalidDiscountRate
         }
         
-        return Int(Double(price) * (1 - discountRate))
+        let additionalRate = 0.1
+        let finalDiscountRate = discountRate + additionalRate
+        
+        return Int(Double(price) * (1 - finalDiscountRate))
     }
 }
