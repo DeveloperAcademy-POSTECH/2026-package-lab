@@ -8,8 +8,6 @@
 
 `Logger`는 Apple의 통합 로깅 시스템(Unified Logging System)에 로그를 기록하기 위한 API입니다. `Logger`는 iOS 14.0 이상에서 사용할 수 있습니다.
 
-/Users/romy/Desktop/Logger 발표 자료/1.png
-
 `print`는 표준 출력에 문자열을 출력하는 반면, `Logger`는 Apple의 Unified Logging System을 통해 로그를 기록합니다. `Logger`로 기록한 로그는 Console.app, `log` 명령어, Xcode의 디버그 콘솔 등을 통해 확인할 수 있습니다.
 
 ```swift
@@ -24,9 +22,8 @@ logger.debug("reversed 호출")
 
 - subsystem: 로그가 속한 큰 기능 영역을 식별합니다. 일반적으로 역도메인 표기법을 사용합니다.
     - Apple의 `OSLog` 문서도 subsystem을 역도메인으로 지정하는 예시를 사용하고 있습니다.
-        
-        /Users/romy/Desktop/Logger 발표 자료/2.png
-        
+        - 보통 앱의 Bundle ID와 동일한 값을 사용합니다.
+                
 - category: subsystem 내부의 구체적인 기능 영역을 식별합니다.
 
 ## Logger가 제공하는 로그 메서드
@@ -104,8 +101,6 @@ public struct StringReverseKit {
 }
 ```
 
-/Users/romy/Desktop/Logger 발표 자료/3.png
-
 이 코드만 넣고 빌드하면 에러가 쏟아집니다.
 
 `Logger`가 iOS 14 / macOS 11 이상에서 사용할 수 있는 API인데, 패키지가 최소 지원 버전을 선언하지 않았기 때문입니다. 패키지는 기본적으로 더 낮은 버전까지 지원한다고 가정하므로, `Logger`를 쓸 수 없다고 판단합니다.
@@ -147,15 +142,9 @@ let package = Package(
 
 이번 예제에서는 패키지 전체에서 `Logger`를 사용하기 때문에 최소 지원 버전을 iOS 14로 올렸습니다. 만약 패키지가 iOS 13까지 지원해야 한다면 `@available`과 `if #available`을 이용해 API availability를 고려한 별도의 설계가 필요합니다.
 
-/Users/romy/Desktop/Logger 발표 자료/4.png
-
-/Users/romy/Desktop/Logger 발표 자료/5.png
-
 제작한 StringReverseKit을 GitHub에 올리고, 다른 프로젝트에서 SPM으로 가져옵니다.
 
 https://github.com/oeunji/StringReverseKit.git
-
-/Users/romy/Desktop/Logger 발표 자료/6.png
 
 StringReverseKit을 import한 후 clean build를 해보면 정상적으로 패키지가 추가된 것을 알 수 있습니다.
 
@@ -179,23 +168,15 @@ struct ContentView: View {
 }
 ```
 
-/Users/romy/Desktop/Logger 발표 자료/7.gif
-
 2장에서 던진 질문으로 돌아가 봅시다. `reversed`가 실제로 호출됐는지 이제 확인할 수 있을까요?
 
 물론 breakpoint를 걸어 실행 흐름을 직접 확인할 수도 있습니다. 하지만 우리는 이미 패키지 안에 Logger를 넣어두었기 때문에, Console.app만 보면 "함수는 호출됐다"는 사실이 즉시 확인됩니다. 호출 여부에 대한 불확실성이 제거되면, 이제 View 쪽만 살펴보면 됩니다.
 
-/Users/romy/Desktop/Logger 발표 자료/Xcode 콘솔 로그.mov
 
 Xcode 콘솔에서도 앱을 실행하면 하단 디버그 콘솔에 로그가 나옵니다.
 
-/Users/romy/Desktop/Logger 발표 자료/Console.app 로그.mov
-
-ㄴ
 Console.app에서도 로그를 확인할 수 있는데요, 
 Console.app에서는 시스템과 앱에서 발생하는 다양한 로그를 함께 확인할 수 있습니다. 이 수많은 로그에서 내 라이브러리가 남기는 로그를 찾는다면 어떻게 해야 할까요?
-
-/Users/romy/Desktop/Logger 발표 자료/8.png
 
 이전에 패키지를 만들 때 subsystem: "com.rossi.StringReverseKit"를 추가해줬는데요, 여기서 com.rossi.StringReverseKit를 검색하면 StringReverseKit이 남긴 로그를 필터링할 수 있습니다. `com.rossi.StringReverseKit`으로 필터를 걸면 해당 subsystem에 속한 로그만 추려서 확인할 수 있습니다.
 
