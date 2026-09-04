@@ -124,7 +124,8 @@ AssetProject.app
 
 라는 구조로 이해를 하게 되었다.
 
-Foundation의 `Bundle`은 이러한 Bundle을 코드에서 나타내고 Resource 등에 접근할 수 있게 해주는 타입이고, `Bundle.main`은 현재 executable을 포함하는 main Bundle을 나타낸다는 것도 확인했다.
+정리하면, Application Bundle은 실제 앱의 파일 구조이자 패키징 단위이다.
+반면 Foundation의 Bundle 타입은 코드에서 특정 Bundle을 나타내고, 그 안의 Resource를 찾을 수 있게 해주는 타입이다.
 
 이 과정에서 처음에는 `Fish.imageset` 같은 Asset도 Bundle이라고 생각할 수 있는지 헷갈렸다.
 
@@ -366,7 +367,10 @@ MyPackage
 
 ### Guiding Question 6
 
-#### Swift Package에서는 Resource를 어떻게 선언하고 처리할까?
+#### Swift Package에서는 Resource를 어떻게 인식하고 처리할까?
+
+Asset Catalog처럼 Xcode가 자동으로 Resource로 인식하고 처리하는 유형도 있다. 따라서 Asset Catalog를 사용하기 위해 반드시 Package Manifest(Package.swift는 Swift Package의 Manifest 파일로, 이 Package를 어떻게 구성할 것인지 Swift Package Manager에게 알려주는 설정 파일이다)에 .process()를 직접 선언해야 하는 것은 아니다.
+반면 자동으로 처리되지 않는 Resource는 Package의 구성 파일인 Package.swift에서 .process(...)나 .copy(...) 같은 규칙을 명시할 수 있다.
 
 Swift Package의 `Package.swift`에서는 Target을 선언하면서 `resources`를 지정할 수 있다.
 
@@ -396,32 +400,19 @@ Swift Package에서는 Resource 처리 규칙으로 `.process()`뿐만 아니라
 ```text
 .process(...)
       ↓
-Build 과정에서 Resource에
+Build 과정에서 Resource 종류와 플랫폼에 맞는
 적절한 처리를 적용할 수 있음
 
 
 .copy(...)
       ↓
 Resource를 원본 형태(as-is)로 복사
+디렉터리를 지정하면 디렉터리 구조를 유지
 ```
-
-이 차이를 앞에서 학습한 Asset Catalog와 연결할 수 있었다.
-
-Asset Catalog 역시 App Build 과정에서:
-
-```text
-Assets.xcassets
-      ↓
-Asset Catalog Compiler (actool)
-      ↓
-Compiled Asset Catalog
-```
-
-처럼 단순히 원본을 복사하는 것이 아니라 Build 과정에서 처리되었다.
-
-따라서 Asset Catalog와 같이 Build 과정에서 적절한 처리가 필요한 Resource는 `.copy()`보다 `.process()`의 성격과 연결해서 이해할 수 있었다.
 
 단, `.process()`라고 해서 모든 종류의 Resource가 동일한 방식으로 compile된다는 의미는 아니다. Resource 종류와 platform에 따라 적용되는 처리가 달라질 수 있다.
+
+또한 두 규칙은 디렉터리 구조에서도 차이가 있다. .copy()에 디렉터리를 지정하면 해당 디렉터리 구조가 유지된다. 반면 .process()는 디렉터리 내부 Resource에 recursively processing rule을 적용하고, 특별한 처리가 없는 Resource는 Resource Bundle의 top level에 배치될 수 있다. 따라서 두 규칙은 단순히 “Build 처리를 하는가”뿐 아니라 Resource의 기존 디렉터리 구조를 유지해야 하는가도 선택 기준이 될 수 있다.
 
 ---
 
@@ -450,7 +441,7 @@ MyPackage
     └── Resources
         └── Assets.xcassets
             └── Fish.imageset
-
+(FishFeature Target을 대상으로)
             ↓ Build
 
 FishFeature Module
@@ -488,9 +479,11 @@ Fish가 속한 곳
 
 Swift Package Manager는 Package Target의 Resource Bundle에 접근할 수 있도록 `Bundle.module` accessor를 제공한다.
 
+
 앞에서 배운 `Image(_:bundle:)`과 연결하면:
 
 ```swift
+// FishFeature Module 내부
 Image("Fish", bundle: .module)
 ```
 
@@ -499,6 +492,7 @@ Image("Fish", bundle: .module)
 이 코드를 앞에서 사용했던 **"무엇을 찾는가 / 어디에서 찾는가"**라는 관점으로 다시 보면:
 
 ```text
+// FishFeature Module 내부
 Image("Fish", bundle: .module)
 
 "Fish"
@@ -520,16 +514,15 @@ Image("Fish")
 // bundle 생략 → main Bundle
 
 
-// Swift Package Target의 image resource
+// FishFeature Module 내부
 Image("Fish", bundle: .module)
 // Package Target의 Resource Bundle
 ```
+Resource를 포함하는 Package Target을 Build하면 해당 Module을 위한 Resource Bundle과 Bundle.module accessor가 생성된다.
+따라서 FishFeature Module 내부에서 Bundle.module을 사용하면 FishFeature Module의 Resource Bundle에 접근할 수 있다.
 
-이를 통해 `Bundle.module`을 단순히 외워야 하는 Swift Package 문법이 아니라:
-
-> **Swift Package Target이 가진 Resource Bundle에 접근하기 위한 Bundle accessor**
-
-로 이해할 수 있게 되었다.
+여기서 Bundle.module은 Package 전체에 하나 존재하는 전역 Bundle이 아니다. Resource를 가진 Package Module마다 해당 Module의 Resource Bundle에 접근하기 위한 accessor가 생성된다.
+(Apple 문서에서는 이를 Bundle의 internal static extension이라고 설명한다.)
 
 ---
 
@@ -574,12 +567,13 @@ Image("Fish", bundle: .module)
 두 흐름의 핵심적인 차이를 **Resource의 소속과 Runtime Lookup에서 사용하는 Bundle**이라는 관점으로 정리할 수 있었다.
 
 ```text
-App Target Resource
+Image("Fish")
+→ bundle 생략
 → main Bundle에서 lookup
 
-Swift Package Target Resource
-→ Package Target의 Resource Bundle에서 lookup
-→ Bundle.module을 통해 접근
+// FishFeature Module 내부
+Image("Fish", bundle: .module)
+→ FishFeature Module의 Resource Bundle에서 lookup
 ```
 
 ---
@@ -645,7 +639,7 @@ Image("Fish", bundle: .module)
 ```
 
 ```text
-"Fish"라는 image resource를 현재 Swift Package Target의 Resource Bundle에서 찾는다.
+FishFeature Module 내부에서, "Fish"라는 image resource를 해당 Module의 Resource Bundle에서 찾는다.
 ```
 
 결국 이번 탐구를 통해 Asset을 단순히 Xcode에 넣어 사용하는 파일로 보는 것에서 벗어나 다음과 같은 흐름으로 바라볼 수 있게 되었다.
