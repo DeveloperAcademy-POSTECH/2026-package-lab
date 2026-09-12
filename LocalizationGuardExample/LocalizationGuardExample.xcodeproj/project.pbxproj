@@ -59,6 +59,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A4DCE06330559C1600E264D7 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A4DCDFEE30544A7500E264D7 /* LocalizationGuardExample */,
@@ -94,6 +95,9 @@
 			);
 			mainGroup = A4DCDFE330544A7500E264D7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A4DCE06130559C0900E264D7 /* XCRemoteSwiftPackageReference "LocalizationGuard" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A4DCDFED30544A7500E264D7 /* Products */;
 			projectDirPath = "";
@@ -123,6 +127,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A4DCE06330559C1600E264D7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = A4DCE06230559C1600E264D7 /* LocalizationGuardPlugin */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A4DCDFF530544A7600E264D7 /* Debug */ = {
@@ -334,6 +345,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A4DCE06130559C0900E264D7 /* XCRemoteSwiftPackageReference "LocalizationGuard" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dudwntjs/LocalizationGuard.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A4DCE06230559C1600E264D7 /* LocalizationGuardPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A4DCE06130559C0900E264D7 /* XCRemoteSwiftPackageReference "LocalizationGuard" */;
+			productName = "plugin:LocalizationGuardPlugin";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A4DCDFE430544A7500E264D7 /* Project object */;
 }

@@ -1,0 +1,15 @@
+{
+  "originHash" : "69386cd17962384e470ed9a9342d34a92a03974fe7b13a0f33863e1c5116884d",
+  "pins" : [
+    {
+      "identity" : "localizationguard",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/dudwntjs/LocalizationGuard.git",
+      "state" : {
+        "revision" : "245083a9e06edcf1762aa36996534fb15f541577",
+        "version" : "1.1.0"
+      }
+    }
+  ],
+  "version" : 3
+}
