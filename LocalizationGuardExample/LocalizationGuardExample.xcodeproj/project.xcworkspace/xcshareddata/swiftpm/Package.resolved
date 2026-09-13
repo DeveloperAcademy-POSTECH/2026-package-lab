@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/dudwntjs/LocalizationGuard.git",
       "state" : {
-        "revision" : "245083a9e06edcf1762aa36996534fb15f541577",
-        "version" : "1.1.0"
+        "revision" : "7d07954ca9da7791425acc44d2ecaf2186c44a46",
+        "version" : "1.2.0"
       }
     }
   ],

@@ -352,7 +352,7 @@
 			repositoryURL = "https://github.com/dudwntjs/LocalizationGuard.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.0;
+				minimumVersion = 1.2.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
