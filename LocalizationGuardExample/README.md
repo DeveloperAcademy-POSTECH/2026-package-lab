@@ -569,7 +569,7 @@ LocalizationGuard는 누락 가능성이 있는 위치를 코드가 작성된 �
 
 [LocalizationGuard 레포](https://github.com/dudwntjs/LocalizationGuard)
 
-오픈소스로 공개해 두었기 때문에, 더 좋은 탐지 방식이나 지원 언어, 사용 경험에 대한 의견이 있다면 같이 개발해 주시면 좋겠습니다.
+오픈소스로 공개해 두었기 때문에, 더 좋은 탐지 방식이나 지원 언어, 사용 경험에 대한 의견이 있다면 같이 개발해요!!!!!
 많은 관심 부탁드리고, 마음에 드셨다면 GitHub Star도 부탁드립니다🤩 헤헤
 
 감사합니다.
