@@ -1,6 +1,6 @@
 # 1. LocalizationGuard 만들게 된 이유
 
-챌린지 4에서 앱에 로컬라이제이션을 적용했습니다. String Catalog에 문구를 모두 등록하고 빌드를 했는데요!
+챌린지 4에서 앱에 **로컬라이제이션**을 적용했습니다. **String Catalog에 문구를 모두 등록**하고 빌드를 했는데요!
 일부 문구는 한국어 그대로 남아 있었습니다.
 
 String Catalog에 문구를 빠뜨린 것도 아니고, 뭐가 문제지? 하고 찾아보았는데!
@@ -21,6 +21,8 @@ SettingsRow(title: "알림")
 
 String Catalog에 `"알림"`이 있더라도 SwiftUI가 자동으로 번역하지 않을 수 있습니다.
 
+<br>
+
 이런 문자열을 찾으려면 프로젝트의 Swift 파일을 하나씩 열어 직접 확인해야 합니다🤬
 
 ```swift
@@ -32,6 +34,8 @@ errorMessage = "설정을 저장하지 못했습니다."
 
 프로젝트가 커질수록 놓치는 문구는 많아지고, 번역이 제대로 적용됐는지 확인하는 데도 시간이 더 듭니다.
 
+<br>
+
 그래서 이런 질문에서 시작했습니다.
 
 > Swift 코드와 String Catalog를 자동으로 비교해서, 번역이 빠진 문자열을 빌드할 때 알려줄 수 없을까?
@@ -41,7 +45,7 @@ errorMessage = "설정을 저장하지 못했습니다."
 
 그래서 빌드를 막는 에러보다, 개발자가 확인하고 판단할 수 있는 **경고**가 더 적절하다고 생각했습니다.
 
-경고로 출력하면 두 가지 장점이 있습니다.
+**경고로 출력하면 두 가지 장점**이 있습니다.
 
 1. 빌드는 계속 진행할 수 있습니다.
 2. Xcode에서 경고를 클릭하면 해당 문자열이 작성된 코드 줄로 바로 이동할 수 있습니다.
@@ -67,6 +71,8 @@ LocalizationGuard
 
 CLI는 실제 검사를 담당하고, 플러그인은 Xcode 빌드 과정에서 CLI를 자동으로 실행합니다.
 
+<br>
+
 ```
 앱 빌드 시작
 → Xcode가 Plugin 실행
@@ -85,6 +91,8 @@ CLI는 Command Line Interface의 줄임말입니다.
 
 LocalizationGuard의 CLI 이름은 `LocalizationGuardCLI`입니다.
 
+<br>
+
 CLI는 프로젝트 경로를 받은 뒤 다음 작업을 수행합니다.
 
 1. 프로젝트 안의 Swift 파일을 찾습니다.
@@ -101,6 +109,8 @@ CLI는 LocalizationGuard의 실제 검사 엔진인 거조!!!!!!!!!!
 
 플러그인은 Xcode의 빌드 과정에 기능을 연결하는 도구입니다.
 `LocalizationGuardPlugin`은 “앱을 빌드할 때 LocalizationGuardCLI도 실행해 달라”고 Xcode에 전달하는 역할을 합니다.
+
+<br>
 
 플러그인이 없다면 매번 터미널에서 CLI 명령을 직접 실행해야 합니다.
 
@@ -208,6 +218,8 @@ LocalizationGuard는 역할별로 파일을 나눴습니다.
 `sourceLanguages`는 Swift 코드에서 원문 문자열로 탐지할 언어입니다.
 `requiredLanguages`는 String Catalog에 번역이 준비되어 있어야 하는 언어입니다.
 
+<br>
+
 예를 들어 한국어를 원문으로 쓰고, 영어와 일본어 번역도 제공해야 하는 앱이라면 아래처럼 설정할 수 있습니다.
 
 ```json
@@ -253,6 +265,8 @@ String(localized: "settings.general")
 
 `CatalogScanner.swift`은 `.xcstrings` 파일 내부를 읽습니다.
 단순히 키가 있는지만 확인하는 것이 아니라, 언어별 번역 상태도 확인합니다.
+
+<br>
 
 예를 들어 한국어 원문과 영어 번역은 있지만 일본어 번역이 없는 경우입니다.
 이 경우 `Missing language` 경고를 출력합니다.
@@ -386,6 +400,8 @@ https://github.com/dudwntjs/LocalizationGuard.git
 
 그다음 앱 타깃에 `LocalizationGuardPlugin`을 추가합니다.
 
+<br>
+
 아래 위치에서 연결됐는지 확인할 수 있습니다.
 
 `Build Phases` → `Run Build Tool Plug-ins` → `LocalizationGuardPlugin`
@@ -405,9 +421,11 @@ https://github.com/dudwntjs/LocalizationGuard.git
 https://github.com/user-attachments/assets/63c37d34-9ada-46bf-85b0-354c4280ef6e
 
 
+|    한국어(원문)   |    영어   |   일본어   |    Xcode    |
+| :-------------: | :----------: | :----------: |:----------: |
+| <img src = "https://github.com/user-attachments/assets/ca409584-cd5b-4e1f-8f89-eacbd310a872" width ="250"> | <img src = "https://github.com/user-attachments/assets/b1cf9007-ad40-493e-ab98-3689548ede5b" width ="250"> | <img src = "https://github.com/user-attachments/assets/4a044f5d-18b1-4669-b783-07b3433a1d22" width ="250"> | <img src = "https://github.com/user-attachments/assets/b9a417ce-7b84-4a7c-941e-db23d312b64b" width ="700"> |
+|경고를 다 지우면~| <img src = "https://github.com/user-attachments/assets/ada24880-428c-417f-bfc4-453601a89e2f" width ="250"> | <img src = "https://github.com/user-attachments/assets/cd221718-4153-41ee-90ba-3ca1a3c6b2fe" width ="250"> | <img src = "https://github.com/user-attachments/assets/9aef61c0-3638-40ab-a5e8-cfeb36063b6f" width ="700"> |
 
-
-경고를 다 고치면~~
 
 ---
 
@@ -419,11 +437,13 @@ https://github.com/user-attachments/assets/63c37d34-9ada-46bf-85b0-354c4280ef6e
 
 한국어는 한글 Unicode 범위가 비교적 명확해서 일반 문자열 탐지가 비교적 쉬웠습니다.
 
+<br>
+
 하지만 일본어는 히라가나, 가타카나, 한자가 함께 사용됩니다. 일본어 원문 문자열을 탐지하려면 일본어가 어떤 문자 체계를 사용하는지 먼저 이해하고, 각 문자 범위를 검사 조건에 반영해야 했습니다🥵
 
 문자 범위를 확인할 때는 Unicode 문자표를 참고했습니다.
 
-Unicode 17.0 Character Code Charts
+[Unicode 17.0 Character Code Charts](https://www.unicode.org/charts/?level=1)
 
 현재는 설정 파일에서 원문 언어를 선택할 수 있습니다.
 
@@ -459,6 +479,8 @@ Text("새로운 알림 \(count)개")
 
 언어마다 단어 순서와 복수형 표현 방식이 다르기 때문입니다. 예를 들어 한국어는 `3개`, 영어는 `3 items`처럼 수량이 놓이는 위치와 표현이 달라질 수 있습니다.
 
+<br>
+
 그래서 보간 문자열은 오류로 막지 않고, 로컬라이제이션 방식을 다시 확인하라는 경고로 출력합니다.
 
 ```
@@ -480,6 +502,8 @@ Verify string interpolation uses String(localized:) or LocalizedStringResource.
 - 필요한 언어의 번역이 있는지
 - 번역값이 비어 있지 않은지
 
+<br>
+
 하지만 아래 항목은 판단하지 않습니다.
 
 - 번역 문장이 자연스러운지
@@ -488,6 +512,8 @@ Verify string interpolation uses String(localized:) or LocalizedStringResource.
 - 번역 검토가 완료됐는지
 
 LocalizationGuard는 번역을 평가하는 도구가 아니라, **번역 누락 가능성을 찾아주는 도구**입니다‼️
+
+<br>
 
 번역이 빠진 경우 AI를 연결해서 자동으로 번역을 채워 주는 방식도 생각해 볼 수 있습니다.
 하지만 LocalizationGuard는 앱을 빌드할 때마다 실행됩니다. 빌드마다 외부 AI 요청을 보내고 응답을 기다리면, 네트워크 상태에 따라 결과가 달라질 수 있고 빌드 시간도 길어질 수 있습니다. 또한 자동 번역 결과는 화면 문맥과 디자인 의도를 모른 채 만들어질 수 있기 때문에, 결국 사람이 다시 확인해야 합니다.
@@ -503,6 +529,8 @@ AI 자동 번역은 빌드 과정이 아닌 별도의 명령이나 기능으로 
 다음으로 고민하고 싶은 부분은 영어 원문 프로젝트입니다.
 한국어와 일본어는 문자 범위를 이용해 사용자에게 보이는 원문 문자열을 어느 정도 찾을 수 있습니다.
 
+<br>
+
 하지만 영어는 상황이 다릅니다.
 
 ```swift
@@ -512,6 +540,8 @@ print("Debug mode")
 ```
 
 영어 문자열은 사용자에게 보여 주는 문구일 수도 있지만, 식별자·디버그 로그·서버 값·라이브러리 이름일 수도 있습니다. 영어 문자열 전체를 단순하게 검사하면 번역 대상이 아닌 문자열까지 너무 많이 경고할 가능성이 있습니다.
+
+<br>
 
 그래서 영어 원문 지원에서는 단순 문자 탐지보다 다음과 같은 기준이 필요하다고 생각합니다.
 
@@ -530,6 +560,8 @@ print("Debug mode")
 
 LocalizationGuard는 번역을 자동으로 작성해 주는 도구는 아닙니다.
 대신 번역이 필요할 수 있는 위치를 빌드 시점에 알려주는 도구입니다.
+
+<br>
 
 프로젝트가 커질수록 번역 누락은 찾기 어려워집니다.
 
