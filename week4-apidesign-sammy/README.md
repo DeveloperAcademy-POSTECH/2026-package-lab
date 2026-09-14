@@ -327,7 +327,10 @@ Airbnb는 코드 전체의 closure 사용 방식을 변경하는 대신, 화면 
 
 ### 2. 왜 첫 번째 상태 변경에서는 `==`가 호출되지 않았을까?
 
-Simulator 실습에서 첫 번째 인원 변경에서는 `DestinationFilterView.body`가 다시 계산되었지만 `==`는 호출되지 않았고, 이후 변경부터는 `==` 비교 결과가 `true`로 반환되며 `body` 계산이 생략되었다. 수동 `Equatable` 구현과 macro 구현에서 동일했고 `onAppear`는 다시 호출되지 않았다. SwiftUI가 첫 업데이트에서 비교 경로를 사용하지 않은 정확한 이유와 이 동작이 보장되는 규칙인지는 공식 문서에서 확인하기 어려웠다.
+https://github.com/user-attachments/assets/976062f8-d752-4709-bdb9-0a52fcc02cc7
+
+- 여행지 View에 @Equatable macro와 .equatable()을 적용했지만, 첫 번째 인원 변경에서는 여행지 View의 배경색이 바뀌었다.
+- 로그를 확인해 보니 이때는 ==가 호출되지 않았다. 정확한 원인에 대해서는 잘 모르겠다...
 
 ## 7. 참고 자료
 
