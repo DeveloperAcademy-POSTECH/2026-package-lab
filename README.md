@@ -1,5 +1,27 @@
 # Package Lab (2026)
 
+## Members
+
+| Nickname | GitHub | Research Keyword |
+| --- | --- | --- |
+| Asher | [TheSoftBelly](https://github.com/TheSoftBelly) | Modules |
+| Rudy | [Rudy-009](https://github.com/Rudy-009) | Static Frameworks |
+| Dustin | [dev-domo](https://github.com/dev-domo) | System Programming Interface |
+| Owen | [Youngmin322](https://github.com/Youngmin322) | Targets |
+| Theo | [junghongseop](https://github.com/junghongseop) | Dependencies |
+| Baekdo | [BAEK10000](https://github.com/BAEK10000) | Objective-C Supports |
+| Kevin | [dongsun-kev](https://github.com/dongsun-kev) | Asset Catalog Build & Runtime Resource Lookup |
+| Neon | [Yeonnies](https://github.com/Yeonnies) | Swift Package Manager & Regression Testing |
+| Rossi | [oeunji](https://github.com/oeunji) | Logger |
+
+## Main Reviewer
+
+| Nickname | GitHub |
+| --- | --- |
+| Dustin | [dev-domo](https://github.com/dev-domo) |
+| Riolu | [HoYeonPark1221](https://github.com/HoYeonPark1221) |
+| Stark | [KhoraLee](https://github.com/KhoraLee) |
+
 ## Who can apply to the lab?
 Anyone who is interested in exploring ideas through libraries and frameworks - including Swift Package - is welcome to apply, regardless of experience level.
 
