@@ -244,7 +244,7 @@ LocalizationGuard는 역할별로 파일을 나눴습니다.
 현재는 Unicode 범위를 이용해 일반 문자열 리터럴을 넓게 탐지합니다. 이 방식은 SwiftUI의 자동 추출 API와 일반 `String` 경로를 구분하지 못합니다.
 
 > [!WARNING]
-> 일반 문자열 탐지 기능은 컴파일러가 String Catalog에 자동 추출하는 `Text`, `Button`, `String(localized:)` 등의 API까지 검사해 오탐이 발생할 수 있습니다. 이 방식은 deprecated 예정이며, 자동 추출되지 않는 실제 UI 문자열만 찾을 수 있는 방식으로 재검토하고 있습니다.
+> 일반 문자열 탐지 기능은 컴파일러가 String Catalog에 자동 추출하는 `Text`, `Button`, `String(localized:)` 등의 API까지 검사해 오탐이 발생할 수 있습니다. 자동 추출되지 않는 실제 UI 문자열만 찾을 수 있도록 현재 방식의 개선 방향을 검토하고 있습니다.
 
 ---
 
@@ -297,7 +297,7 @@ CLI
 현재는 네 종류의 warning과 하나의 summary note를 제공합니다.
 
 > [!WARNING]
-> `Missing translation`, `String interpolation`, `Unknown localization key`는 컴파일러의 String Catalog 자동 추출 대상과 겹쳐 오탐이 발생할 수 있습니다. 세 진단은 deprecated 예정이며, 제거 또는 재설계를 검토하고 있습니다.
+> `Missing translation`과 `Unknown localization key`는 컴파일러의 String Catalog 자동 추출 대상과 겹쳐 오탐이 발생할 수 있습니다. 자동 추출 대상과 실제로 누락될 수 있는 일반 `String` 경로를 구분하는 방향을 검토하고 있습니다.
 
 ## 4-1. Missing translation
 
@@ -311,17 +311,7 @@ String Catalog에 해당 키를 추가하면 해결할 수 있습니다.
 
 ---
 
-## 4-2. String interpolation
-
-문자열 보간이 포함된 경우입니다.
-
-<img width="1604" height="306" alt="image" src="https://github.com/user-attachments/assets/f969c717-daae-4d27-a122-276fe79a233c" />
-
-다만 `Text("새로운 알림 \(count)개")`처럼 `LocalizedStringKey`로 처리되는 SwiftUI 보간은 컴파일러가 자동 추출하고 String Catalog의 plural variation으로 처리할 수 있습니다. 현재 진단은 이 경우를 구분하지 못해 오탐이 될 수 있습니다.
-
----
-
-## 4-3. Unknown localization key
+## 4-2. Unknown localization key
 
 코드에서 명시적으로 사용한 로컬라이제이션 키가 String Catalog에 없는 경우입니다.
 
@@ -344,7 +334,7 @@ String(localized: "코드 키 오타 수정")
 
 ---
 
-## 4-4. Missing language
+## 4-3. Missing language
 
 키는 존재하지만 특정 언어의 번역만 빠진 경우입니다.
 
@@ -359,7 +349,7 @@ String Catalog 에디터에서도 언어별 번역 진행률을 확인할 수 �
 
 ---
 
-## 4-5. Localization summary
+## 4-4. Localization summary
 
 검사가 끝나면 전체 결과도 알려줍니다. 특정 코드의 문제를 알리는 경고가 아니라, 검사가 정상적으로 끝났는지와 전체 발견 개수를 알려주는 요약입니다.
 
@@ -435,7 +425,7 @@ https://github.com/user-attachments/assets/63c37d34-9ada-46bf-85b0-354c4280ef6e
 현재는 설정 파일에서 원문 언어를 선택할 수 있습니다.
 
 > [!WARNING]
-> Unicode 범위로 원문 언어를 판별하는 현재 방식은 일반 문자열 탐지 기능의 일부입니다. 자동 추출 대상과 중복되고 디버그 문구·식별자까지 포함할 수 있어 deprecated 예정이며, 더 정확한 탐지 방식을 검토하고 있습니다.
+> Unicode 범위로 원문 언어를 판별하는 현재 방식은 일반 문자열 탐지 기능의 일부입니다. 자동 추출 대상과 중복되고 디버그 문구·식별자까지 포함할 수 있어, 더 정확한 탐지 방식을 검토하고 있습니다.
 
 ```swift
 {
@@ -457,21 +447,7 @@ https://github.com/user-attachments/assets/63c37d34-9ada-46bf-85b0-354c4280ef6e
 
 ---
 
-## 6-2. 한계점 2: 문자열 보간의 올바른 번역 방식은 판단하기 어려움
-
-LocalizationGuard는 현재 문자열 보간도 찾아냅니다.
-
-```swift
-Text("새로운 알림 \(count)개")
-```
-
-하지만 `Text`의 보간은 `LocalizedStringKey`로 자동 추출되고 plural variation으로 처리할 수 있어, 현재 경고는 오탐이 될 수 있습니다.
-
-정규식 기반 구현은 SwiftUI 보간과 일반 `String` 보간을 구분하지 못합니다. 따라서 이 진단은 deprecated 예정이며, 제거 또는 실제 검토가 필요한 경우만 판단하는 방향으로 재설계할 예정입니다.
-
----
-
-## 6-3. 한계점 3: 번역 품질까지는 판단할 수 없음
+## 6-2. 한계점 2: 번역 품질까지는 판단할 수 없음
 
 현재 LocalizationGuard는 아래 항목을 확인합니다.
 
@@ -501,7 +477,7 @@ AI 자동 번역은 빌드 과정이 아닌 별도의 명령이나 기능으로 
 
 ---
 
-## 6-4. 앞으로의 방향: 영어 원문을 어떻게 지원할 것인가
+## 6-3. 앞으로의 방향: 영어 원문을 어떻게 지원할 것인가
 
 다음으로 고민하고 싶은 부분은 영어 원문 프로젝트입니다.
 한국어와 일본어는 문자 범위를 이용해 사용자에게 보이는 원문 문자열을 어느 정도 찾을 수 있습니다.
