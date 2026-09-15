@@ -50,11 +50,7 @@ errorMessage = "설정을 저장하지 못했습니다."
 1. 빌드는 계속 진행할 수 있습니다.
 2. Xcode에서 경고를 클릭하면 해당 문자열이 작성된 코드 줄로 바로 이동할 수 있습니다.
 
-Apple 공식 문서에서도 빌드 과정에서 발생한 warning과 error는 파일 경로, 줄 번호, 열 번호와 연결된 이슈로 관리된다고 설명합니다.
-
-[Issues | Apple Developer Documentation](https://developer.apple.com/documentation/appstoreconnectapi/issues)
-
-제가 만든 패키지도 이 형식을 활용해, 번역이 필요할 수 있는 문자열 위치로 바로 이동할 수 있도록 만들었습니다.
+LocalizationGuard는 파일 경로, 줄 번호, 열 번호를 포함한 Xcode 경고 형식으로 결과를 출력합니다. 그래서 Issue navigator에서 경고를 선택하면 문제가 발견된 코드 위치를 바로 확인할 수 있습니다.
 
 ---
 
@@ -112,13 +108,9 @@ CLI는 LocalizationGuard의 실제 검사 엔진인 거조!!!!!!!!!!
 
 <br>
 
-플러그인이 없다면 매번 터미널에서 CLI 명령을 직접 실행해야 합니다.
+`Run Script Phase`로도 CLI를 빌드 과정에서 실행할 수 있습니다. 다만 Run Script Phase는 프로젝트마다 실행할 스크립트를 직접 설정해야 합니다.
 
-```
-swift run LocalizationGuardCLI /path/to/your/project
-```
-
-하지만 플러그인을 앱 타깃에 연결하면, 평소처럼 `⌘B`나 `⌘R`을 누를 때 자동으로 검사가 실행됩니다.
+LocalizationGuard는 여러 프로젝트에서 같은 방식으로 설치하고 사용할 수 있도록 Build Tool Plugin을 사용했습니다. 플러그인을 앱 타깃에 연결하면, 평소처럼 `⌘B`나 `⌘R`을 누를 때 자동으로 검사가 실행됩니다.
 
 ```
 ⌘B 또는 ⌘R
@@ -249,15 +241,10 @@ LocalizationGuard는 역할별로 파일을 나눴습니다.
 
 `ProjectScanner.swift`은 Swift 파일을 순회하며 문자열을 찾습니다.
 
-예를 들어 아래 같은 코드를 검사합니다.
+현재는 Unicode 범위를 이용해 일반 문자열 리터럴을 넓게 탐지합니다. 이 방식은 SwiftUI의 자동 추출 API와 일반 `String` 경로를 구분하지 못합니다.
 
-```swift
-Text("알림")
-Button("저장") { }
-String(localized: "settings.general")
-```
-
-일반 문자열, SwiftUI에서 자주 사용하는 문자열 API, 명시적인 로컬라이제이션 키를 검사합니다.
+> [!WARNING]
+> 일반 문자열 탐지 기능은 컴파일러가 String Catalog에 자동 추출하는 `Text`, `Button`, `String(localized:)` 등의 API까지 검사해 오탐이 발생할 수 있습니다. 이 방식은 deprecated 예정이며, 자동 추출되지 않는 실제 UI 문자열만 찾을 수 있는 방식으로 재검토하고 있습니다.
 
 ---
 
@@ -309,6 +296,9 @@ CLI
 
 현재는 네 종류의 warning과 하나의 summary note를 제공합니다.
 
+> [!WARNING]
+> `Missing translation`, `String interpolation`, `Unknown localization key`는 컴파일러의 String Catalog 자동 추출 대상과 겹쳐 오탐이 발생할 수 있습니다. 세 진단은 deprecated 예정이며, 제거 또는 재설계를 검토하고 있습니다.
+
 ## 4-1. Missing translation
 
 코드에 사용자에게 보이는 한국어 문자열이 있지만, String Catalog에 없는 경우입니다.
@@ -317,12 +307,7 @@ CLI
 
 String Catalog에 해당 키를 추가하면 해결할 수 있습니다.
 
-의도적으로 번역하지 않는 문자열이라면 해당 줄의 검사를 제외할 수 있습니다.
-
-```swift
-// localization-guard:disable-next-line
-Text(verbatim: "HTTP")
-```
+`Text(verbatim:)`은 번역하지 않는 문자열임을 명시하는 API이므로, 별도의 disable 주석까지 요구하지 않도록 개선할 예정입니다.
 
 ---
 
@@ -332,13 +317,15 @@ Text(verbatim: "HTTP")
 
 <img width="1604" height="306" alt="image" src="https://github.com/user-attachments/assets/f969c717-daae-4d27-a122-276fe79a233c" />
 
-언어마다 단어 순서가 다를 수 있으므로, 보간 문자열은 로컬라이제이션 방식을 다시 확인해야 합니다.
+다만 `Text("새로운 알림 \(count)개")`처럼 `LocalizedStringKey`로 처리되는 SwiftUI 보간은 컴파일러가 자동 추출하고 String Catalog의 plural variation으로 처리할 수 있습니다. 현재 진단은 이 경우를 구분하지 못해 오탐이 될 수 있습니다.
 
 ---
 
 ## 4-3. Unknown localization key
 
 코드에서 명시적으로 사용한 로컬라이제이션 키가 String Catalog에 없는 경우입니다.
+
+다만 `String(localized:)`처럼 컴파일러가 자동 추출하는 키는 일반적인 사용 흐름에서 String Catalog에 추가됩니다. 플러그인이 컴파일러의 자동 추출보다 먼저 실행되는 첫 빌드에는 일시적인 경고가 나올 수 있어, 이 진단도 재검토하고 있습니다.
 
 <img width="1046" height="88" alt="image" src="https://github.com/user-attachments/assets/3dacf2c1-18be-4aa2-8f7f-60ee92a6363c" />
 
@@ -366,9 +353,9 @@ String(localized: "코드 키 오타 수정")
 <img width="1760" height="1194" alt="image" src="https://github.com/user-attachments/assets/d9ad1974-6ad0-4122-88e8-8c76c480ed0a" />
 
 
-이 경고는 Swift 코드가 아니라 String Catalog 파일 위치로 연결됩니다.
+이 경고는 Swift 코드가 아니라 String Catalog 파일 위치로 연결됩니다. 현재는 정확히 비어 있는 언어 칸이 아니라 Catalog 파일 위치로 연결되며, 누락 항목을 바로 선택하는 기능은 개선이 필요합니다.
 
-거기서 바로 문구를 추가하면 됩니다~
+String Catalog 에디터에서도 언어별 번역 진행률을 확인할 수 있습니다. 이 진단은 `requiredLanguages`로 Catalog 전체에 아직 없는 언어까지 검사할 수 있다는 점을 제공하지만, 기존 에디터 기능과의 차별점은 더 검토하고 있습니다.
 
 ---
 
@@ -447,6 +434,9 @@ https://github.com/user-attachments/assets/63c37d34-9ada-46bf-85b0-354c4280ef6e
 
 현재는 설정 파일에서 원문 언어를 선택할 수 있습니다.
 
+> [!WARNING]
+> Unicode 범위로 원문 언어를 판별하는 현재 방식은 일반 문자열 탐지 기능의 일부입니다. 자동 추출 대상과 중복되고 디버그 문구·식별자까지 포함할 수 있어 deprecated 예정이며, 더 정확한 탐지 방식을 검토하고 있습니다.
+
 ```swift
 {
   "sourceLanguages": ["ja"]
@@ -469,28 +459,15 @@ https://github.com/user-attachments/assets/63c37d34-9ada-46bf-85b0-354c4280ef6e
 
 ## 6-2. 한계점 2: 문자열 보간의 올바른 번역 방식은 판단하기 어려움
 
-LocalizationGuard는 문자열 보간도 찾아냅니다.
+LocalizationGuard는 현재 문자열 보간도 찾아냅니다.
 
 ```swift
 Text("새로운 알림 \(count)개")
 ```
 
-하지만 도구가 이 문자열의 번역 방식까지 자동으로 결정할 수는 없습니다.
+하지만 `Text`의 보간은 `LocalizedStringKey`로 자동 추출되고 plural variation으로 처리할 수 있어, 현재 경고는 오탐이 될 수 있습니다.
 
-언어마다 단어 순서와 복수형 표현 방식이 다르기 때문입니다. 예를 들어 한국어는 `3개`, 영어는 `3 items`처럼 수량이 놓이는 위치와 표현이 달라질 수 있습니다.
-
-<br>
-
-그래서 보간 문자열은 오류로 막지 않고, 로컬라이제이션 방식을 다시 확인하라는 경고로 출력합니다.
-
-```
-String interpolation:
-Verify string interpolation uses String(localized:) or LocalizedStringResource.
-```
-
-개발자가 `String(localized:)` 또는 `LocalizedStringResource`를 사용해야 하는지 판단해야 합니다.
-
-이것도 결국 언어별 문자 체계 이해해야 한다는 한계점으로 볼 수 있습니다.
+정규식 기반 구현은 SwiftUI 보간과 일반 `String` 보간을 구분하지 못합니다. 따라서 이 진단은 deprecated 예정이며, 제거 또는 실제 검토가 필요한 경우만 판단하는 방향으로 재설계할 예정입니다.
 
 ---
 
