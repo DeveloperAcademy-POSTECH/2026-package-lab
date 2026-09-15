@@ -1,0 +1,15 @@
+{
+  "originHash" : "2d07ec2df9f4ef9fbe8e292af2ab9cd955657cf93c6bf7cc06cb42dd3b8ea337",
+  "pins" : [
+    {
+      "identity" : "stringreversekit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/oeunji/StringReverseKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "f5bb9172738d4a5a9ee4f9f0cfe93252987b4a70"
+      }
+    }
+  ],
+  "version" : 3
+}
