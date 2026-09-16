@@ -84,11 +84,16 @@ public struct EquatableMacro: ExtensionMacro {
                 }
                     
             }
-
-        let comparison = propertyNames
-            .map { "lhs.\($0) == rhs.\($0)" }
-            .joined(separator: " &&\n")
-
+        let comparison: String
+        
+        if propertyNames.isEmpty {
+            comparison = "true"
+        } else {
+            comparison = propertyNames
+                .map { "lhs.\($0) == rhs.\($0)" }
+                .joined(separator: " &&\n")
+        }
+        
         return [
             try ExtensionDeclSyntax(
                 """

@@ -120,4 +120,35 @@ final class ViewEquatableMacrosTests: XCTestCase {
         throw XCTSkip("Macro tests require the host platform")
         #endif
     }
+    
+    func testAllPropertiesAreSkipped() throws {
+        #if canImport(ViewEquatableMacrosMacros)
+        assertMacroExpansion(
+            """
+            @Equatable
+            struct Example {
+                @SkipEquatable
+                let handler: Handler
+            }
+            """,
+            expandedSource: """
+            struct Example {
+                let handler: Handler
+            }
+
+            extension Example: Swift.Equatable {
+                static func == (
+                    lhs: Self,
+                    rhs: Self
+                ) -> Bool {
+                    true
+                }
+            }
+            """,
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("Macro tests require the host platform")
+        #endif
+    }
 }
