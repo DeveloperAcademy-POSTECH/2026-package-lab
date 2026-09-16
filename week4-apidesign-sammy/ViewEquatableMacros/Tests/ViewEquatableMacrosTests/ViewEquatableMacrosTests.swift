@@ -151,4 +151,34 @@ final class ViewEquatableMacrosTests: XCTestCase {
         throw XCTSkip("Macro tests require the host platform")
         #endif
     }
+    
+    func testPublicTypeGeneratesPublicEqualityOperator() throws {
+        #if canImport(ViewEquatableMacrosMacros)
+        assertMacroExpansion(
+            """
+            @Equatable
+            public struct Example {
+                public let value: Int
+            }
+            """,
+            expandedSource: """
+            public struct Example {
+                public let value: Int
+            }
+
+            extension Example: Swift.Equatable {
+                public static func == (
+                    lhs: Self,
+                    rhs: Self
+                ) -> Bool {
+                    lhs.value == rhs.value
+                }
+            }
+            """,
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("Macro tests require the host platform")
+        #endif
+    }
 }

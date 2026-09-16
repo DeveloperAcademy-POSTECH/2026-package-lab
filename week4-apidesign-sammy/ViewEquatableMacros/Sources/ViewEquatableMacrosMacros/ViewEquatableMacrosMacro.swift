@@ -53,6 +53,26 @@ private extension PatternBindingSyntax {
     }
 }
 
+private extension StructDeclSyntax {
+    var equalityAccessModifier: String {
+        let accessLevels = [
+            "public",
+            "package",
+            "internal",
+            "fileprivate",
+            "private",
+        ]
+        
+        guard let modifier = modifiers.first(
+            where: { accessLevels.contains($0.name.text) }
+        ) else {
+            return ""
+        }
+        
+        return "\(modifier.name.text) "
+    }
+}
+
 public struct EquatableMacro: ExtensionMacro {
     public static func expansion(
         of node: AttributeSyntax,
@@ -94,11 +114,13 @@ public struct EquatableMacro: ExtensionMacro {
                 .joined(separator: " &&\n")
         }
         
+        let equalityAccessModifier = structDeclaration.equalityAccessModifier
+        
         return [
             try ExtensionDeclSyntax(
                 """
                 extension \(type.trimmed): Swift.Equatable {
-                    static func == (
+                    \(raw: equalityAccessModifier)static func == (
                         lhs: Self,
                         rhs: Self
                     ) -> Bool {
