@@ -38,7 +38,17 @@ let package = Package(
 
         // A client of the library, which is able to use the macro in its own code.
         .executableTarget(name: "ViewEquatableMacrosClient", dependencies: ["ViewEquatableMacros"]),
-
+        
+        .testTarget(
+            name: "ViewEquatableMacrosTests",
+            dependencies: [
+                "ViewEquatableMacrosMacros",
+                .product(
+                    name: "SwiftSyntaxMacrosTestSupport",
+                    package: "swift-syntax"
+                ),
+            ]
+        ),
     ],
     swiftLanguageModes: [.v6]
 )

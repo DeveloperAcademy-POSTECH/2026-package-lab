@@ -3,8 +3,55 @@ import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
-// 실제 코드 생성 로직을 작성
 
+private extension VariableDeclSyntax {
+    var hasSkipEquatableAttribute: Bool {
+        attributes.contains { element in
+            guard case .attribute(let attribute) = element else {
+                return false
+            }
+            
+            return attribute.attributeName.trimmedDescription == "SkipEquatable"
+        }
+    }
+    
+    var isTypeProperty: Bool {
+        modifiers.contains { modifier in
+            let modifierName = modifier.name.text
+            
+            return modifierName == "static" || modifierName == "class"
+        }
+    }
+}
+
+private extension PatternBindingSyntax {
+    var isStoredProperty: Bool {
+        guard let accessorBlock else {
+            // accessor 가 없으면 일반 stored property
+            return true
+        }
+        
+        switch accessorBlock.accessors {
+        case .getter:
+            // computed property인 경우
+            return false
+            
+        case .accessors(let accessors):
+            // didSet/willSet 만 있는 stored property
+            return accessors.allSatisfy { accessor in
+                let specifier = accessor.accessorSpecifier.text
+                
+                return specifier == "willSet" || specifier == "didSet"
+            }
+            
+        @unknown default:
+            return false
+        }
+        
+
+        
+    }
+}
 
 public struct EquatableMacro: ExtensionMacro {
     public static func expansion(
@@ -21,28 +68,21 @@ public struct EquatableMacro: ExtensionMacro {
         }
 
         let propertyNames = structDeclaration.memberBlock.members
-            .compactMap { member -> String? in
-                guard let variable =
-                    member.decl.as(VariableDeclSyntax.self),
-                    variable.bindings.count == 1,
-                    let binding = variable.bindings.first,
-                    binding.accessorBlock == nil,
-                    let identifier =
-                        binding.pattern.as(IdentifierPatternSyntax.self)
-                else {
-                    return nil
+            .flatMap { member -> [String] in
+                guard let variable = member.decl.as(VariableDeclSyntax.self) else { return [] }
+                
+                guard !variable.hasSkipEquatableAttribute else { return [] }
+                
+                guard !variable.isTypeProperty else { return [] }
+                
+                return variable.bindings.compactMap { binding in
+                    guard binding.isStoredProperty else { return nil }
+                    
+                    guard let identifier = binding.pattern.as(IdentifierPatternSyntax.self) else { return nil }
+                    
+                    return identifier.identifier.text
                 }
-
-                let shouldSkip = variable.attributes.contains { element in
-                    guard case .attribute(let attribute) = element else {
-                        return false
-                    }
-
-                    return attribute.attributeName.trimmedDescription
-                        == "SkipEquatable"
-                }
-
-                return shouldSkip ? nil : identifier.identifier.text
+                    
             }
 
         let comparison = propertyNames
