@@ -181,4 +181,29 @@ final class ViewEquatableMacrosTests: XCTestCase {
         throw XCTSkip("Macro tests require the host platform")
         #endif
     }
+    
+    func testReportsDiagnosticWhenAppliedToClass() throws {
+        #if canImport(ViewEquatableMacrosMacros)
+        assertMacroExpansion(
+            """
+            @Equatable
+            class Example {}
+            """,
+            expandedSource:
+            """
+            class Example {}
+            """,
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "@Equatable macro can only be applied to a struct",
+                    line: 1,
+                    column: 1
+                ),
+            ],
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("Macro tests require the host platform")
+        #endif
+    }
 }

@@ -2,7 +2,26 @@ import SwiftCompilerPlugin
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
+import SwiftDiagnostics
 
+private enum EquatableMacroDiagnostic: DiagnosticMessage {
+    case requiresStruct
+    
+    var message: String {
+        "@Equatable macro can only be applied to a struct"
+    }
+    
+    var diagnosticID: MessageID {
+        MessageID(
+            domain: "ViewEquatableMacros",
+            id: "requiresStruct"
+        )
+    }
+    
+    var severity: DiagnosticSeverity {
+        .error
+    }
+}
 
 private extension VariableDeclSyntax {
     var hasSkipEquatableAttribute: Bool {
@@ -84,6 +103,13 @@ public struct EquatableMacro: ExtensionMacro {
         guard let structDeclaration =
             declaration.as(StructDeclSyntax.self)
         else {
+            context.diagnose(
+                Diagnostic(
+                    node: Syntax(node),
+                    message: EquatableMacroDiagnostic.requiresStruct
+                )
+            )
+            
             return []
         }
 
