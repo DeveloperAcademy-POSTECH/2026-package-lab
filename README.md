@@ -13,6 +13,8 @@
 | Kevin | [dongsun-kev](https://github.com/dongsun-kev) | Asset Catalog Build & Runtime Resource Lookup |
 | Neon | [Yeonnies](https://github.com/Yeonnies) | Swift Package Manager & Regression Testing |
 | Rossi | [oeunji](https://github.com/oeunji) | Logger |
+| Juni | [dudwntjs](https://github.com/dudwntjs) | CLI & Plug in |
+| Sammy | [LeeDayday](https://github.com/LeeDayday) | Macro |
 
 ## Main Reviewer
 
