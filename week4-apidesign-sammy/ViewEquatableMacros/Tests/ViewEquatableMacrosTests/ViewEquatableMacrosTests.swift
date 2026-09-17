@@ -1,0 +1,209 @@
+import SwiftSyntax
+import SwiftSyntaxMacros
+import SwiftSyntaxMacrosTestSupport
+import XCTest
+
+#if canImport(ViewEquatableMacrosMacros)
+import ViewEquatableMacrosMacros
+
+private let testMacros: [String: Macro.Type] = [
+    "Equatable": EquatableMacro.self,
+    "SkipEquatable": SkipEquatableMacro.self,
+]
+#endif
+
+final class ViewEquatableMacrosTests: XCTestCase {
+    func testMultipleBindingsAreCompared() throws {
+        #if canImport(ViewEquatableMacrosMacros)
+        assertMacroExpansion(
+            """
+            @Equatable
+            struct Example {
+                var a = 1, b = 2
+            }
+            """,
+            expandedSource: """
+            struct Example {
+                var a = 1, b = 2
+            }
+
+            extension Example: Swift.Equatable {
+                static func == (
+                    lhs: Self,
+                    rhs: Self
+                ) -> Bool {
+                    lhs.a == rhs.a &&
+                    lhs.b == rhs.b
+                }
+            }
+            """,
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip(
+            "Macro tests require the host platform"
+        )
+        #endif
+    }
+    
+    func testObservedStoredPropertyIsCompared() throws {
+        #if canImport(ViewEquatableMacrosMacros)
+        assertMacroExpansion(
+            """
+            @Equatable
+            struct Example {
+                var count = 0 {
+                    didSet {}
+                }
+            }
+            """,
+            expandedSource: """
+                struct Example {
+                    var count = 0 {
+                        didSet {}
+                    }
+                }
+                
+                extension Example: Swift.Equatable {
+                    static func == (
+                        lhs: Self,
+                        rhs: Self
+                    ) -> Bool {
+                        lhs.count == rhs.count
+                    }
+                }
+                """,
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("Macro tests require the host platform")
+        #endif
+    }
+    
+    func testStaticAndComputedPropertiesAreExcluded() throws {
+        #if canImport(ViewEquatableMacrosMacros)
+        assertMacroExpansion(
+            """
+            @Equatable
+            struct Example {
+                static let defaultCount = 0
+                let count: Int
+            
+                var doubledCount: Int {
+                    count * 2
+                }
+            }
+            """,
+            expandedSource:
+            """
+            struct Example {
+                static let defaultCount = 0
+                let count: Int
+            
+                var doubledCount: Int {
+                    count * 2
+                }
+            }
+            
+            extension Example: Swift.Equatable {
+                static func == (
+                    lhs: Self,
+                    rhs: Self
+                ) -> Bool {
+                    lhs.count == rhs.count
+                }
+            }
+            """,
+            macros: testMacros
+           )
+        #else
+        throw XCTSkip("Macro tests require the host platform")
+        #endif
+    }
+    
+    func testAllPropertiesAreSkipped() throws {
+        #if canImport(ViewEquatableMacrosMacros)
+        assertMacroExpansion(
+            """
+            @Equatable
+            struct Example {
+                @SkipEquatable
+                let handler: Handler
+            }
+            """,
+            expandedSource: """
+            struct Example {
+                let handler: Handler
+            }
+
+            extension Example: Swift.Equatable {
+                static func == (
+                    lhs: Self,
+                    rhs: Self
+                ) -> Bool {
+                    true
+                }
+            }
+            """,
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("Macro tests require the host platform")
+        #endif
+    }
+    
+    func testPublicTypeGeneratesPublicEqualityOperator() throws {
+        #if canImport(ViewEquatableMacrosMacros)
+        assertMacroExpansion(
+            """
+            @Equatable
+            public struct Example {
+                public let value: Int
+            }
+            """,
+            expandedSource: """
+            public struct Example {
+                public let value: Int
+            }
+
+            extension Example: Swift.Equatable {
+                public static func == (
+                    lhs: Self,
+                    rhs: Self
+                ) -> Bool {
+                    lhs.value == rhs.value
+                }
+            }
+            """,
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("Macro tests require the host platform")
+        #endif
+    }
+    
+    func testReportsDiagnosticWhenAppliedToClass() throws {
+        #if canImport(ViewEquatableMacrosMacros)
+        assertMacroExpansion(
+            """
+            @Equatable
+            class Example {}
+            """,
+            expandedSource:
+            """
+            class Example {}
+            """,
+            diagnostics: [
+                DiagnosticSpec(
+                    message: "@Equatable macro can only be applied to a struct",
+                    line: 1,
+                    column: 1
+                ),
+            ],
+            macros: testMacros
+        )
+        #else
+        throw XCTSkip("Macro tests require the host platform")
+        #endif
+    }
+}
